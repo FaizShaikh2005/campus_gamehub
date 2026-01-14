@@ -1,0 +1,231 @@
+{% extends 'base.html' %}
+{% block title %}Student Admin Dashboard{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background: linear-gradient(135deg, #0d0d0d, #1a1a1a);
+        color: #f5f5f5;
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #00ffcc;
+        text-shadow: 0 0 10px #00ffcc, 0 0 20px #009988;
+    }
+
+    .card {
+        background: #1c1c1c;
+        border: 2px solid #333;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 0 15px #000;
+        transition: 0.3s;
+    }
+
+    .card:hover {
+        border-color: #00ffcc;
+        box-shadow: 0 0 15px #00ffcc, 0 0 30px #009988;
+    }
+
+    .card-header {
+        background: #0d0d0d;
+        border-bottom: 2px solid #333;
+        color: #ffaa00;
+        font-weight: bold;
+        text-align: center;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .list-group-item {
+        background: #0f0f0f;
+        color: #f5f5f5;
+        border: 1px solid #333;
+        transition: 0.3s;
+    }
+
+    .list-group-item:hover {
+        border-color: #00ffcc;
+        box-shadow: 0 0 10px #00ffcc;
+    }
+
+    .badge {
+        font-weight: bold;
+        padding: 0.4em 0.8em;
+        border-radius: 8px;
+        text-shadow: 0 0 5px #000;
+    }
+
+    .badge-available {
+        background: #00ffcc;
+        color: #000;
+        text-shadow: 0 0 10px #00ffcc;
+    }
+
+    .badge-notavailable {
+        background: #ff4d4d;
+        color: #000;
+        text-shadow: 0 0 10px #ff4d4d;
+    }
+
+    .badge-paid {
+        background: #00ffcc;
+        color: #000;
+    }
+
+    .badge-unpaid {
+        background: #ffaa00;
+        color: #000;
+    }
+
+    .btn-neon {
+        display: inline-block;
+        padding: 6px 14px;
+        border: 2px solid #00ffcc;
+        color: #00ffcc;
+        font-weight: bold;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: 0.3s;
+        background: transparent;
+        margin-right: 5px;
+    }
+
+    .btn-neon:hover {
+        background: #00ffcc;
+        color: #000;
+        box-shadow: 0 0 10px #00ffcc, 0 0 30px #009988;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+   
+th, td {
+    padding: 10px;
+    border: 1px solid #333;
+    text-align: center;
+}
+
+th {
+    background: #0d0d0d;
+    color: #ffaa00; /* Neon header color */
+    border-bottom: 2px solid #333;
+}
+
+td {
+    background: #1c1c1c;
+    color: #f0f8ff; /* Bright text for better visibility */
+}
+
+tr:hover {
+    background: #111;
+    box-shadow: 0 0 5px #00ffcc;
+    color: #ffffff; /* Text pops on hover */
+}
+
+</style>
+
+<h2>Student Admin Dashboard</h2>
+<div class="text-center mb-4">
+    <a href="{% url 'home' %}" class="btn-neon">🏠 Home Page</a>
+    <a href="{% url 'profile' %}" class="btn-neon">👤 Profile</a>
+</div>
+
+<!-- Games You Added -->
+<div class="card">
+    <div class="card-header">Games You Added</div>
+    <div class="card-body">
+        <ul class="list-group">
+            {% for game in games %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ game.title }}
+                {% if game.available %}
+                    <span class="badge badge-available">Available</span>
+                {% else %}
+                    <span class="badge badge-notavailable">Not Available</span>
+                {% endif %}
+            </li>
+            {% empty %}
+            <li class="list-group-item">No games added yet.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<!-- Rental Requests You Manage -->
+<div class="card">
+    <div class="card-header">Rental Requests You Manage</div>
+    <div class="card-body">
+        <table>
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Game</th>
+                    <th>Days</th>
+                    <th>Total Cost</th>
+                    <th>Status</th>
+                    <th>Payment Status</th>
+                    <th>Payment Method</th>
+                    <th>Payment Date</th>
+                    <th>Transaction ID</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for rental in rentals %}
+                <tr>
+                    <td>{{ rental.user.username }}</td>
+                    <td>{{ rental.game.title }}</td>
+                    <td>{{ rental.rental_days }}</td>
+                    <td>₹{{ rental.cost|default:"0.00" }}</td>
+                    <td>
+                        {% if rental.status|lower == 'pending' %}
+                            <span class="badge badge-available" style="background:#ffaa00; color:#000; text-shadow:0 0 10px #ffaa00;">Pending</span>
+                        {% elif rental.status|lower == 'approved' %}
+                            <span class="badge badge-available">Approved</span>
+                        {% elif rental.status|lower == 'rejected' %}
+                            <span class="badge badge-notavailable">Rejected</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ rental.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if rental.payment_status|lower == 'paid' %}
+                            <span class="badge-paid">Paid</span>
+                        {% else %}
+                            <span class="badge-unpaid">Pending</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ rental.payment_method|default:"-" }}</td>
+                    <td>{{ rental.payment_date|date:"Y-m-d H:i"|default:"-" }}</td>
+                    <td>{{ rental.transaction_id|default:"-" }}</td>
+                    <td>
+                        {% if rental.status|lower == 'pending' %}
+                            <form action="{% url 'update_rental_status' rental.id 'Approved' %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-neon me-1">Approve</button>
+                            </form>
+                            <form action="{% url 'update_rental_status' rental.id 'Rejected' %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-neon">Reject</button>
+                            </form>
+                        {% else %}
+                            <span class="badge badge-notavailable">No Action</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="10">No rental requests found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

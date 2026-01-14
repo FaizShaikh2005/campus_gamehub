@@ -1,0 +1,292 @@
+{% extends 'base.html' %}
+{% block title %}{{ game.title }}{% endblock %}
+
+{% block content %}
+<style>
+  body {
+      background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
+      color: #f5f5f5;
+  }
+
+  .game-card {
+      background: #1c1c1c;
+      border: 2px solid #333;
+      border-radius: 12px;
+      box-shadow: 0 0 15px #000;
+      overflow: hidden;
+      transition: 0.3s;
+  }
+
+  .game-card:hover {
+      border-color: #00ffcc;
+      box-shadow: 0 0 20px #00ffcc;
+      transform: translateY(-5px);
+  }
+
+  .game-card img {
+      max-height: 350px;
+      object-fit: cover;
+  }
+
+  .game-title {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #00ffcc;
+      text-shadow: 0 0 8px #00ffcc, 0 0 15px #009988;
+  }
+
+  .badge-available, .badge-unavailable {
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-weight: bold;
+      display: inline-block;
+      margin-bottom: 10px;
+  }
+
+  .badge-available {
+      background: transparent;
+      border: 2px solid #00ffcc;
+      color: #00ffcc;
+      box-shadow: 0 0 8px #00ffcc;
+  }
+
+  .badge-unavailable {
+      background: transparent;
+      border: 2px solid #ff4d4d;
+      color: #ff4d4d;
+      box-shadow: 0 0 8px #ff4d4d;
+  }
+
+  .btn-neon {
+      display: inline-block;
+      padding: 10px 20px;
+      border: 2px solid #00ffcc;
+      color: #00ffcc;
+      font-weight: bold;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: 0.3s;
+      background: transparent;
+      margin-right: 10px;
+      margin-top: 5px;
+  }
+
+  .btn-neon:hover {
+      background: #00ffcc;
+      color: #000;
+      box-shadow: 0 0 15px #00ffcc, 0 0 40px #00ffcc;
+  }
+
+  .btn-secondary-neon {
+      border: 2px solid #888;
+      color: #888;
+      cursor: not-allowed;
+      margin-top: 5px;
+  }
+
+  .btn-warning-neon {
+      border: 2px solid #ffaa00;
+      color: #ffaa00;
+  }
+
+  .btn-warning-neon:hover {
+      background: #ffaa00;
+      color: #000;
+      box-shadow: 0 0 15px #ffaa00, 0 0 40px #ffaa00;
+  }
+
+  .btn-danger-neon {
+      border: 2px solid #ff4d4d;
+      color: #ff4d4d;
+  }
+
+  .btn-danger-neon:hover {
+      background: #ff4d4d;
+      color: #000;
+      box-shadow: 0 0 15px #ff4d4d, 0 0 40px #ff4d4d;
+  }
+</style>
+
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="game-card">
+      {% if game.image %}
+        <img src="{{ game.image.url }}" class="card-img-top" alt="{{ game.title }}">
+      {% else %}
+        <img src="https://via.placeholder.com/600x300?text=No+Image" class="card-img-top" alt="No Image">
+      {% endif %}
+
+      <div class="p-4">
+        <h2 class="game-title mb-3">{{ game.title }}</h2>
+        <p>{{ game.description }}</p>
+
+        {% if game.available %}
+          <span class="badge-available">Available</span>
+        {% else %}
+          <span class="badge-unavailable">Not Available</span>
+        {% endif %}
+
+        <div class="d-flex gap-2 flex-wrap mt-3 align-items-center">
+          {# Request Rental button if available and not uploader #}
+          {% if game.available and request.user != game.added_by %}
+            <a href="{% url 'request_rental' game.id %}" class="btn-neon">🎮 Request Rental</a>
+          {% endif %}
+
+          {# Edit/Delete for uploader #}
+          {% if request.user == game.added_by %}
+            <a href="{% url 'edit_game' game.pk %}" class="btn-warning-neon">✏️ Edit</a>
+            <form method="post" action="{% url 'delete_game' game.pk %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn-danger-neon">🗑️ Delete</button>
+            </form>
+          {% endif %}
+
+          {# Profile button for game owner #}
+          {% if game.added_by %}
+            <a href="{% url 'view_user_profile' game.added_by.id %}" class="btn-neon">👤 View Owner Profile</a>
+          {% else %}
+            <span class="btn-secondary-neon">No Owner Info</span>
+          {% endif %}
+
+          <a href="{% url 'game_list' %}" class="btn-neon">⬅️ Back to Games</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
+{% comment %} {% extends 'base.html' %}
+{% block title %}{{ game.title }}{% endblock %}
+
+{% block content %}
+<style>
+  body {
+      background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
+      color: #f5f5f5;
+  }
+  .game-card {
+      background: #1c1c1c;
+      border: 2px solid #333;
+      border-radius: 12px;
+      box-shadow: 0 0 15px #000;
+      overflow: hidden;
+      transition: 0.3s;
+  }
+  .game-card:hover {
+      border-color: #00ffcc;
+      box-shadow: 0 0 20px #00ffcc;
+      transform: translateY(-5px);
+  }
+  .game-card img {
+      max-height: 350px;
+      object-fit: cover;
+  }
+  .game-title {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #00ffcc;
+      text-shadow: 0 0 8px #00ffcc, 0 0 15px #009988;
+  }
+  .badge-available {
+      background: transparent;
+      border: 2px solid #00ffcc;
+      color: #00ffcc;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-weight: bold;
+      box-shadow: 0 0 8px #00ffcc;
+  }
+  .badge-unavailable {
+      background: transparent;
+      border: 2px solid #ff4d4d;
+      color: #ff4d4d;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-weight: bold;
+      box-shadow: 0 0 8px #ff4d4d;
+  }
+  .btn-neon {
+      position: relative;
+      display: inline-block;
+      padding: 10px 20px;
+      border: 2px solid #00ffcc;
+      color: #00ffcc;
+      font-weight: bold;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: 0.2s;
+      background: transparent;
+  }
+  .btn-neon:hover {
+      background: #00ffcc;
+      color: #000;
+      box-shadow: 0 0 15px #00ffcc, 0 0 40px #00ffcc;
+  }
+  .btn-danger-neon {
+      border: 2px solid #ff4d4d;
+      color: #ff4d4d;
+  }
+  .btn-danger-neon:hover {
+      background: #ff4d4d;
+      color: #000;
+      box-shadow: 0 0 15px #ff4d4d, 0 0 40px #ff4d4d;
+  }
+  .btn-warning-neon {
+      border: 2px solid #ffaa00;
+      color: #ffaa00;
+  }
+  .btn-warning-neon:hover {
+      background: #ffaa00;
+      color: #000;
+      box-shadow: 0 0 15px #ffaa00, 0 0 40px #ffaa00;
+  }
+  .btn-secondary-neon {
+      border: 2px solid #888;
+      color: #888;
+      cursor: not-allowed;
+  }
+</style>
+
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="game-card">
+      
+      {% if game.image %}
+        <img src="{{ game.image.url }}" class="card-img-top" alt="{{ game.title }}">
+      {% else %}
+        <img src="https://via.placeholder.com/600x300?text=No+Image" class="card-img-top" alt="No Image">
+      {% endif %}
+      
+      <div class="p-4">
+        <h2 class="game-title mb-3">{{ game.title }}</h2>
+        <p>{{ game.description }}</p>
+
+        {% if game.available %}
+          <span class="badge-available mb-3 d-inline-block">Available</span>
+        {% else %}
+          <span class="badge-unavailable mb-3 d-inline-block">Not Available</span>
+        {% endif %}
+
+        <div class="d-flex gap-2 flex-wrap mt-3 align-items-center">
+          {# ✅ Show Request Rental only if game is available AND user is not the uploader #}
+          {% if game.available and request.user != game.added_by %}
+            <a href="{% url 'request_rental' game.id %}" class="btn-neon d-inline-flex align-items-center">🎮 Request Rental</a>
+          {% endif %}
+
+          {% if request.user == game.added_by %}
+            <a href="{% url 'edit_game' game.pk %}" class="btn-warning-neon d-inline-flex align-items-center">✏️ Edit</a>
+            <form method="post" action="{% url 'delete_game' game.pk %}" class="d-inline-block m-0">
+              {% csrf_token %}
+              <button type="submit" class="btn-danger-neon d-inline-flex align-items-center">🗑️ Delete</button>
+            </form>
+          {% endif %}
+
+          <a href="{% url 'game_list' %}" class="btn-neon d-inline-flex align-items-center">⬅️ Back to Games</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% endcomment %}

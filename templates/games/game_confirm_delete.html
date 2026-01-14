@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}Delete Game{% endblock %}
+{% block content %}
+  <h2>Delete Game</h2>
+  <p>Are you sure you want to delete "{{ game.title }}"?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+    <a href="{% url 'game_detail' game.pk %}" class="btn btn-secondary">Cancel</a>
+  </form>
+{% endblock %}

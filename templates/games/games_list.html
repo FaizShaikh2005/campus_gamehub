@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+{% block title %}Games{% endblock %}
+
+{% block content %}
+<style>
+  body {
+      background: linear-gradient(135deg, #0d0d0d, #1a1a1a);
+      color: #f5f5f5;
+  }
+  h2 {
+      color: #00ffcc;
+      text-shadow: 0 0 8px #00ffcc, 0 0 15px #009988;
+  }
+  .btn-add {
+      border: 2px solid #00ffcc;
+      color: #00ffcc;
+      background: transparent;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: 0.3s;
+  }
+  .btn-add:hover {
+      background: #00ffcc;
+      color: #000;
+      box-shadow: 0 0 15px #00ffcc, 0 0 40px #00ffcc;
+  }
+  .game-card {
+      background: #1c1c1c;
+      border: 2px solid #333;
+      border-radius: 12px;
+      box-shadow: 0 0 15px #000;
+      transition: 0.3s;
+      overflow: hidden;
+  }
+  .game-card:hover {
+      border-color: #00ffcc;
+      box-shadow: 0 0 20px #00ffcc;
+      transform: translateY(-5px);
+  }
+  .game-card img {
+      height: 200px;
+      object-fit: cover;
+  }
+  .card-title {
+      color: #00ffcc;
+      font-weight: bold;
+      text-shadow: 0 0 5px #00ffcc;
+  }
+  .badge-available {
+      background: transparent;
+      border: 2px solid #00ffcc;
+      color: #00ffcc;
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      box-shadow: 0 0 8px #00ffcc;
+  }
+  .badge-unavailable {
+      background: transparent;
+      border: 2px solid #ff4d4d;
+      color: #ff4d4d;
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      box-shadow: 0 0 8px #ff4d4d;
+  }
+  .btn-view {
+      border: 2px solid #ffaa00;
+      color: #ffaa00;
+      font-weight: bold;
+      border-radius: 8px;
+      background: transparent;
+      transition: 0.3s;
+  }
+  .btn-view:hover {
+      background: #ffaa00;
+      color: #000;
+      box-shadow: 0 0 15px #ffaa00, 0 0 40px #ffaa00;
+  }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2>Available Games</h2>
+  {% if user.is_authenticated %}
+    {% if user.is_superuser %}
+      <a href="{% url 'add_game' %}" class="btn btn-add">+ Add Game</a>
+    {% elif user.is_staff %}
+      <a href="{% url 'add_game' %}" class="btn btn-add">+ Add Game</a>
+    {% endif %}
+  {% endif %}
+</div>
+
+<div class="row">
+  {% for game in games %}
+    <div class="col-md-4 mb-4">
+      <div class="game-card h-100">
+        {% if game.image %}
+          <img src="{{ game.image.url }}" class="card-img-top" alt="{{ game.title }}">
+        {% else %}
+          <img src="https://via.placeholder.com/300x200?text=No+Image" class="card-img-top" alt="No Image">
+        {% endif %}
+        <div class="card-body d-flex flex-column p-3">
+          <h5 class="card-title">{{ game.title }}</h5>
+          <p class="card-text text-truncate">{{ game.description|truncatewords:20 }}</p>
+          
+          {% if game.available %}
+            <span class="badge-available mb-2">Available</span>
+          {% else %}
+            <span class="badge-unavailable mb-2">Not Available</span>
+          {% endif %}
+          
+          <a href="{% url 'game_detail' game.pk %}" class="btn btn-view mt-auto">👀 View Details</a>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <p>No games available yet. 
+      {% if user.is_authenticated %}
+        {% if user.is_superuser or user.is_staff %}
+          <a href="{% url 'add_game' %}">Add one?</a>
+        {% endif %}
+      {% endif %}
+    </p>
+  {% endfor %}
+</div>
+{% endblock %}
+
+
+
+
+{% comment %} {% extends 'base.html' %}
+{% block title %}Games{% endblock %}
+
+{% block content %}
+<style>
+  body {
+      background: linear-gradient(135deg, #0d0d0d, #1a1a1a);
+      color: #f5f5f5;
+  }
+  h2 {
+      color: #00ffcc;
+      text-shadow: 0 0 8px #00ffcc, 0 0 15px #009988;
+  }
+  .btn-add {
+      border: 2px solid #00ffcc;
+      color: #00ffcc;
+      background: transparent;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: 0.3s;
+  }
+  .btn-add:hover {
+      background: #00ffcc;
+      color: #000;
+      box-shadow: 0 0 15px #00ffcc, 0 0 40px #00ffcc;
+  }
+  .game-card {
+      background: #1c1c1c;
+      border: 2px solid #333;
+      border-radius: 12px;
+      box-shadow: 0 0 15px #000;
+      transition: 0.3s;
+      overflow: hidden;
+  }
+  .game-card:hover {
+      border-color: #00ffcc;
+      box-shadow: 0 0 20px #00ffcc;
+      transform: translateY(-5px);
+  }
+  .game-card img {
+      height: 200px;
+      object-fit: cover;
+  }
+  .card-title {
+      color: #00ffcc;
+      font-weight: bold;
+      text-shadow: 0 0 5px #00ffcc;
+  }
+  .badge-available {
+      background: transparent;
+      border: 2px solid #00ffcc;
+      color: #00ffcc;
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      box-shadow: 0 0 8px #00ffcc;
+  }
+  .badge-unavailable {
+      background: transparent;
+      border: 2px solid #ff4d4d;
+      color: #ff4d4d;
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      box-shadow: 0 0 8px #ff4d4d;
+  }
+  .btn-view {
+      border: 2px solid #ffaa00;
+      color: #ffaa00;
+      font-weight: bold;
+      border-radius: 8px;
+      background: transparent;
+      transition: 0.3s;
+  }
+  .btn-view:hover {
+      background: #ffaa00;
+      color: #000;
+      box-shadow: 0 0 15px #ffaa00, 0 0 40px #ffaa00;
+  }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2>Available Games</h2>
+  {% if user.is_authenticated %}
+    <a href="{% url 'add_game' %}" class="btn btn-add">+ Add Game</a>
+  {% endif %}
+</div>
+
+<div class="row">
+  {% for game in games %}
+    <div class="col-md-4 mb-4">
+      <div class="game-card h-100">
+        {% if game.image %}
+          <img src="{{ game.image.url }}" class="card-img-top" alt="{{ game.title }}">
+        {% else %}
+          <img src="https://via.placeholder.com/300x200?text=No+Image" class="card-img-top" alt="No Image">
+        {% endif %}
+        <div class="card-body d-flex flex-column p-3">
+          <h5 class="card-title">{{ game.title }}</h5>
+          <p class="card-text text-truncate">{{ game.description|truncatewords:20 }}</p>
+          
+          {% if game.available %}
+            <span class="badge-available mb-2">Available</span>
+          {% else %}
+            <span class="badge-unavailable mb-2">Not Available</span>
+          {% endif %}
+          
+          <a href="{% url 'game_detail' game.pk %}" class="btn btn-view mt-auto">👀 View Details</a>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <p>No games available yet. {% if user.is_authenticated %} <a href="{% url 'add_game' %}">Add one?</a>{% endif %}</p>
+  {% endfor %}
+</div>
+{% endblock %} {% endcomment %}

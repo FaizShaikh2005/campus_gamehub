@@ -1,0 +1,534 @@
+{% extends 'base.html' %}
+{% block title %}Campus GameHub - Rent & Share Games{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --neon-primary: #00ffcc;
+        --neon-secondary: #00d4aa;
+        --neon-glow: rgba(0, 255, 204, 0.4);
+        --dark-bg: #0a0a0a;
+        --card-bg: #151515;
+        --border-subtle: #222;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
+        color: #f5f5f5;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        overflow-x: hidden;
+    }
+
+    /* Animated Background */
+    .hero-section {
+        position: relative;
+        min-height: 85vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: 
+            radial-gradient(circle at 20% 50%, rgba(0, 255, 204, 0.08) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(0, 212, 170, 0.06) 0%, transparent 50%);
+        animation: pulse 8s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.6; }
+    }
+
+    /* Grid Pattern Overlay */
+    .grid-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: 
+            linear-gradient(rgba(0, 255, 204, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 255, 204, 0.03) 1px, transparent 1px);
+        background-size: 50px 50px;
+        opacity: 0.5;
+    }
+
+    /* Hero Content */
+    .hero-content {
+        position: relative;
+        z-index: 10;
+        text-align: center;
+        max-width: 1200px;
+        padding: 0 20px;
+        animation: fadeInUp 1s ease-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .brand-badge {
+        display: inline-block;
+        padding: 8px 20px;
+        background: rgba(0, 255, 204, 0.1);
+        border: 1px solid var(--neon-primary);
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        margin-bottom: 30px;
+        text-transform: uppercase;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+
+    .hero-title {
+        font-size: clamp(2.5rem, 7vw, 5rem);
+        font-weight: 900;
+        background: linear-gradient(135deg, #00ffcc 0%, #00d4aa 50%, #00ffcc 100%);
+        background-size: 200% 200%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 25px;
+        line-height: 1.1;
+        animation: gradientShift 5s ease infinite;
+        letter-spacing: -2px;
+    }
+
+    @keyframes gradientShift {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+    }
+
+    .hero-subtitle {
+        font-size: clamp(1rem, 2vw, 1.3rem);
+        color: #b0b0b0;
+        margin-bottom: 40px;
+        line-height: 1.6;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* User Welcome Section */
+    .user-welcome {
+        background: rgba(0, 255, 204, 0.05);
+        border: 1px solid rgba(0, 255, 204, 0.2);
+        padding: 20px 30px;
+        border-radius: 15px;
+        margin-bottom: 35px;
+        backdrop-filter: blur(10px);
+        display: inline-block;
+    }
+
+    .user-welcome h5 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--neon-primary);
+        margin: 0;
+    }
+
+    /* CTA Buttons */
+    .cta-group {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 30px;
+    }
+
+    .btn-enterprise {
+        position: relative;
+        padding: 16px 40px;
+        font-size: 1rem;
+        font-weight: 600;
+        border: 2px solid var(--neon-primary);
+        border-radius: 12px;
+        background: transparent;
+        color: var(--neon-primary);
+        cursor: pointer;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-enterprise::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(0, 255, 204, 0.3), transparent);
+        transition: left 0.5s;
+    }
+
+    .btn-enterprise:hover::before {
+        left: 100%;
+    }
+
+    .btn-enterprise:hover {
+        background: var(--neon-primary);
+        color: #000;
+        box-shadow: 0 0 30px var(--neon-glow), 0 0 60px var(--neon-glow);
+        transform: translateY(-2px);
+    }
+
+    .btn-enterprise.btn-primary {
+        background: var(--neon-primary);
+        color: #000;
+    }
+
+    .btn-enterprise.btn-primary:hover {
+        background: var(--neon-secondary);
+        box-shadow: 0 0 40px var(--neon-glow), 0 0 80px var(--neon-glow);
+    }
+
+    /* Features Section */
+    .features-section {
+        position: relative;
+        padding: 100px 20px;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 70px;
+    }
+
+    .section-title {
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 15px;
+        letter-spacing: -1px;
+    }
+
+    .section-subtitle {
+        font-size: 1.1rem;
+        color: #888;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 30px;
+        margin-top: 50px;
+    }
+
+    .feature-card {
+        position: relative;
+        background: linear-gradient(135deg, #151515 0%, #1a1a1a 100%);
+        border: 1px solid var(--border-subtle);
+        border-radius: 20px;
+        padding: 40px 30px;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+    }
+
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--neon-primary), var(--neon-secondary));
+        transform: scaleX(0);
+        transition: transform 0.4s;
+    }
+
+    .feature-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .feature-card:hover {
+        border-color: var(--neon-primary);
+        box-shadow: 0 10px 40px rgba(0, 255, 204, 0.15);
+        transform: translateY(-8px);
+    }
+
+    .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        display: inline-block;
+        filter: drop-shadow(0 0 10px var(--neon-glow));
+    }
+
+    .feature-card h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--neon-primary);
+        margin-bottom: 15px;
+    }
+
+    .feature-card p {
+        color: #999;
+        line-height: 1.7;
+        margin-bottom: 25px;
+    }
+
+    .feature-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--neon-primary);
+        font-weight: 600;
+        text-decoration: none;
+        transition: gap 0.3s;
+    }
+
+    .feature-link:hover {
+        gap: 15px;
+    }
+
+    /* Stats Section */
+    .stats-section {
+        background: linear-gradient(135deg, #0d0d0d 0%, #1a1a1a 100%);
+        padding: 80px 20px;
+        margin: 80px 0;
+        position: relative;
+    }
+
+    .stats-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--neon-primary), transparent);
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 40px;
+        max-width: 1200px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .stat-item {
+        padding: 20px;
+    }
+
+    .stat-number {
+        font-size: 3.5rem;
+        font-weight: 900;
+        background: linear-gradient(135deg, var(--neon-primary), var(--neon-secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 10px;
+    }
+
+    .stat-label {
+        font-size: 1rem;
+        color: #888;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .hero-section {
+            min-height: 70vh;
+        }
+        
+        .cta-group {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .btn-enterprise {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .features-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Coming Soon Badge */
+    .coming-soon {
+        position: relative;
+        opacity: 0.6;
+        pointer-events: none;
+    }
+
+    .coming-soon::after {
+        content: 'COMING SOON';
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        background: var(--neon-primary);
+        color: #000;
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 20px; 
+        letter-spacing: 0.5px;
+    }    
+</style>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="grid-overlay"></div>
+    <div class="hero-content">
+        <div class="brand-badge">
+            🎮 Campus GameHub
+        </div>
+        
+        <h1 class="hero-title">
+            Level Up Your<br>Campus Experience
+        </h1>
+        
+        <p class="hero-subtitle">
+            The premier platform for students to rent, share, and discover games. 
+            Join your campus gaming community and never miss game night again.
+        </p>
+
+        {% if user.is_authenticated %}
+            <div class="user-welcome">
+                <h5>👾 Welcome back, <strong>{{ user.username }}</strong></h5>
+            </div>
+        {% endif %}
+
+        <div class="cta-group">
+            {% if user.is_authenticated %}
+                <a href="{% url 'game_list' %}" class="btn-enterprise btn-primary">
+                    <span>🎲</span> Browse Games
+                </a>
+
+                {% if user.is_superuser or user.is_staff %}
+                    <a href="{% url 'add_game' %}" class="btn-enterprise">
+                        <span>➕</span> Add Game
+                    </a>
+                {% endif %}
+
+                {% if user.is_superuser %}
+                    <a href="{% url 'superadmin_dashboard' %}" class="btn-enterprise">
+                        <span>📊</span> Dashboard
+                    </a>
+                {% elif user.is_staff %}
+                    <a href="{% url 'student_admin_dashboard' %}" class="btn-enterprise">
+                        <span>📊</span> Dashboard
+                    </a>
+                {% else %}
+                    <a href="{% url 'student_dashboard' %}" class="btn-enterprise">
+                        <span>📊</span> Dashboard
+                    </a>
+                {% endif %}
+
+                <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-enterprise">
+                        <span>🚪</span> Logout
+                    </button>
+                </form>
+            {% else %}
+                <a href="{% url 'register' %}" class="btn-enterprise btn-primary">
+                    <span>🕹️</span> Get Started
+                </a>
+                <a href="{% url 'login' %}" class="btn-enterprise">
+                    <span>🔑</span> Login
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="stats-grid">
+        <div class="stat-item">
+            <div class="stat-number">10+</div>
+            <div class="stat-label">Games Available</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">100+</div>
+            <div class="stat-label">Active Students</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">5.0★</div>
+            <div class="stat-label">Community Rating</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">24/7</div>
+            <div class="stat-label">Platform Uptime</div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="section-header">
+        <h2 class="section-title">Everything You Need</h2>
+        <p class="section-subtitle">Powerful features designed for the modern campus gamer</p>
+    </div>
+
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">🎲</div>
+            <h3>Explore Games</h3>
+            <p>Discover an extensive collection of the most popular and exciting games shared by your campus community.</p>
+            <a href="{% url 'game_list' %}" class="feature-link">
+                Browse Library <span>→</span>
+            </a>
+        </div>
+
+        {% if user.is_superuser or user.is_staff %}
+        <div class="feature-card">
+            <div class="feature-icon">➕</div>
+            <h3>Share Games</h3>
+            <p>List your games, expand your collection's reach, and build reputation within the gaming community.</p>
+            <a href="{% url 'add_game' %}" class="feature-link">
+                Add Game <span>→</span>
+            </a>
+        </div>
+        {% endif %}
+
+        <div class="feature-card {% if not user.is_authenticated %}coming-soon{% endif %}">
+            <div class="feature-icon">⚡</div>
+            <h3>Manage Rentals</h3>
+            <p>Track your active rentals, manage due dates, and ensure you never miss an important game night.</p>
+            <a href="{% if user.is_authenticated %}{% url 'student_dashboard' %}{% else %}#{% endif %}" class="feature-link">
+                {% if user.is_authenticated %}View Rentals{% else %}Coming Soon{% endif %} <span>→</span>
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

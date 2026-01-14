@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+{% block title %}My Rentals{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
+        color: #f5f5f5;
+    }
+    .page-title {
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #00ffcc;
+        text-shadow: 0 0 8px #00ffcc, 0 0 15px #009988;
+        margin: 40px 0 30px;
+    }
+    .neon-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #1c1c1c;
+        border: 2px solid #333;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 0 15px #000;
+    }
+    .neon-table thead {
+        background: #0f0f0f;
+    }
+    .neon-table th, .neon-table td {
+        padding: 14px 16px;
+        text-align: center;
+        border: 1px solid #333;
+    }
+    .neon-table th {
+        color: #00ffcc;
+        font-weight: bold;
+        text-shadow: 0 0 6px #00ffcc;
+    }
+    .neon-table tbody tr {
+        transition: 0.3s;
+    }
+    .neon-table tbody tr:hover {
+        background: #141414;
+        box-shadow: 0 0 10px #00ffcc inset;
+    }
+    .empty-row td {
+        text-align: center;
+        color: #aaa;
+        padding: 20px;
+        font-style: italic;
+    }
+    .btn-neon {
+        padding: 6px 14px;
+        border: 2px solid #00ffcc;
+        color: #00ffcc;
+        font-weight: bold;
+        border-radius: 8px;
+        text-decoration: none;
+        background: transparent;
+        transition: 0.3s;
+    }
+    .btn-neon:hover {
+        background: #00ffcc;
+        color: #000;
+        box-shadow: 0 0 10px #00ffcc, 0 0 30px #009988;
+    }
+    .badge-neon {
+        padding: 5px 10px;
+        border-radius: 8px;
+        font-weight: bold;
+        text-shadow: 0 0 5px #000;
+    }
+    .badge-paid {
+        background: #00ffcc;
+        color: #000;
+        text-shadow: 0 0 10px #00ffcc;
+    }
+    .badge-pending {
+        background: #ffaa00;
+        color: #000;
+        text-shadow: 0 0 10px #ffaa00;
+    }
+</style>
+
+<h2 class="page-title">🎮 My Rental Requests</h2>
+
+<table class="neon-table">
+    <thead>
+        <tr>
+            <th>Game</th>
+            <th>Status</th>
+            <th>Requested At</th>
+            <th>Approved At</th>
+            <th>Days</th>
+            <th>Cost (₹)</th>
+            <th>Payment Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for rental in rentals %}
+        <tr>
+            <td>{{ rental.game.title }}</td>
+            <td>{{ rental.get_status_display }}</td>
+            <td>{{ rental.requested_at|date:"d M Y H:i" }}</td>
+            <td>{{ rental.approved_at|default:"-"|date:"d M Y H:i" }}</td>
+            <td>{{ rental.rental_days }}</td>
+            <td>{{ rental.cost|default:"-" }}</td>
+            <td>
+                {% if rental.payment_status == "paid" %}
+                    <span class="badge-neon badge-paid">Paid</span>
+                {% else %}
+                    <span class="badge-neon badge-pending">Pending</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if rental.status == "approved" and rental.payment_status == "pending" %}
+                    <a href="{% url 'pay_rental' rental.id %}" class="btn-neon">💳 Pay Now</a>
+                {% elif rental.payment_status == "paid" %}
+                    ✅
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr class="empty-row">
+            <td colspan="8">No rentals requested yet.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+
+{% comment %} 
+{% extends 'base.html' %}
+{% block title %}My Rentals{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
+        color: #f5f5f5;
+    }
+    .page-title {
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #00ffcc;
+        text-shadow: 0 0 8px #00ffcc, 0 0 15px #009988;
+        margin: 40px 0 30px;
+    }
+    .neon-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #1c1c1c;
+        border: 2px solid #333;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 0 15px #000;
+    }
+    .neon-table thead {
+        background: #0f0f0f;
+    }
+    .neon-table th, .neon-table td {
+        padding: 14px 16px;
+        text-align: center;
+        border: 1px solid #333;
+    }
+    .neon-table th {
+        color: #00ffcc;
+        font-weight: bold;
+        text-shadow: 0 0 6px #00ffcc;
+    }
+    .neon-table tbody tr {
+        transition: 0.3s;
+    }
+    .neon-table tbody tr:hover {
+        background: #141414;
+        box-shadow: 0 0 10px #00ffcc inset;
+    }
+    .empty-row td {
+        text-align: center;
+        color: #aaa;
+        padding: 20px;
+        font-style: italic;
+    }
+</style>
+
+<h2 class="page-title">🎮 My Rental Requests</h2>
+
+<table class="neon-table">
+    <thead>
+        <tr>
+            <th>Game</th>
+            <th>Status</th>
+            <th>Requested At</th>
+            <th>Approved At</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for rental in rentals %}
+        <tr>
+            <td>{{ rental.game.title }}</td>
+            <td>{{ rental.get_status_display }}</td>
+            <td>{{ rental.requested_at }}</td>
+            <td>{{ rental.approved_at|default:"-" }}</td>
+        </tr>
+        {% empty %}
+        <tr class="empty-row">
+            <td colspan="4">No rentals requested yet.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %} {% endcomment %}

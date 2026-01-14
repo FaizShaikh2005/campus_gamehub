@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<style>
+  body {
+      background: linear-gradient(135deg, #0d0d0d, #1a1a1a);
+      color: #f5f5f5;
+  }
+  h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #00ffcc;
+      text-shadow: 0 0 10px #00ffcc, 0 0 20px #009988;
+  }
+  .form-card {
+      background: #1c1c1c;
+      border: 2px solid #333;
+      border-radius: 12px;
+      padding: 25px;
+      max-width: 600px;
+      margin: auto;
+      box-shadow: 0 0 20px #000;
+      transition: 0.3s;
+  }
+  .form-card:hover {
+      border-color: #00ffcc;
+      box-shadow: 0 0 20px #00ffcc;
+  }
+  .form-card label {
+      color: #ffaa00;
+      font-weight: bold;
+      margin-top: 10px;
+  }
+  .form-card input,
+  .form-card textarea,
+  .form-card select {
+      background: #0d0d0d;
+      border: 2px solid #333;
+      color: #f5f5f5;
+      border-radius: 8px;
+      padding: 10px;
+      width: 100%;
+      transition: 0.3s;
+  }
+  .form-card input:focus,
+  .form-card textarea:focus,
+  .form-card select:focus {
+      border-color: #00ffcc;
+      box-shadow: 0 0 10px #00ffcc;
+      outline: none;
+  }
+  .btn-save {
+      border: 2px solid #00ffcc;
+      color: #00ffcc;
+      background: transparent;
+      border-radius: 8px;
+      font-weight: bold;
+      padding: 10px 20px;
+      transition: 0.3s;
+  }
+  .btn-save:hover {
+      background: #00ffcc;
+      color: #000;
+      box-shadow: 0 0 15px #00ffcc, 0 0 40px #00ffcc;
+  }
+  .btn-cancel {
+      border: 2px solid #ff4d4d;
+      color: #ff4d4d;
+      background: transparent;
+      border-radius: 8px;
+      font-weight: bold;
+      padding: 10px 20px;
+      transition: 0.3s;
+      margin-left: 10px;
+  }
+  .btn-cancel:hover {
+      background: #ff4d4d;
+      color: #000;
+      box-shadow: 0 0 15px #ff4d4d, 0 0 40px #ff4d4d;
+  }
+</style>
+
+<div class="form-card">
+  <h2>{{ title }}</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="d-flex justify-content-end mt-3">
+      <button type="submit" class="btn-save">💾 Save</button>
+      <a href="{% url 'game_list' %}" class="btn-cancel">✖ Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+
+

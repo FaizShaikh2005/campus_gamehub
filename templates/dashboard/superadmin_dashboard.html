@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% block title %}Super Admin Dashboard{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background: linear-gradient(135deg, #0d0d0d, #1a1a1a);
+        color: #f5f5f5;
+    }
+
+    .dashboard-hero {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    .dashboard-hero h1 {
+        font-size: 3rem;
+        font-weight: 800;
+        color: #00ffcc;
+        text-shadow: 0 0 15px #00ffcc, 0 0 30px #009988;
+    }
+    .dashboard-hero p {
+        color: #bbb;
+        font-size: 1.2rem;
+    }
+
+    .summary-card {
+        background: #1c1c1c;
+        border: 2px solid #333;
+        border-radius: 15px;
+        padding: 25px;
+        transition: 0.3s;
+        text-align: center;
+        box-shadow: 0 0 20px #000;
+    }
+    .summary-card:hover {
+        border-color: #00ffcc;
+        box-shadow: 0 0 20px #00ffcc;
+        transform: translateY(-5px);
+    }
+    .summary-card h5 {
+        color: #ffaa00;
+        font-weight: bold;
+    }
+    .summary-card p {
+        font-size: 2.2rem;
+        color: #00ffcc;
+        font-weight: bold;
+        text-shadow: 0 0 10px #00ffcc;
+    }
+
+    /* Neon Buttons */
+    .btn-neon {
+        padding: 8px 18px;
+        border: 2px solid #00ffcc;
+        color: #00ffcc;
+        font-weight: bold;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: 0.3s;
+        background: transparent;
+    }
+    .btn-neon:hover {
+        background: #00ffcc;
+        color: #000;
+        box-shadow: 0 0 15px #00ffcc, 0 0 40px #00ffcc;
+    }
+
+    /* Neon Badges */
+    .badge-neon {
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    .badge-pending {
+        color: #000;
+        background: #ffaa00;
+        box-shadow: 0 0 10px #ffaa00;
+    }
+    .badge-approved {
+        color: #000;
+        background: #00ffcc;
+        box-shadow: 0 0 10px #00ffcc;
+    }
+    .badge-rejected {
+        color: #000;
+        background: #ff4d4d;
+        box-shadow: 0 0 10px #ff4d4d;
+    }
+    .badge-paid {
+        color: #000;
+        background: #00ffcc;
+        box-shadow: 0 0 10px #00ffcc;
+    }
+    .badge-unpaid {
+        color: #000;
+        background: #ffaa00;
+        box-shadow: 0 0 10px #ffaa00;
+    }
+    .badge-default {
+        color: #fff;
+        background: #555;
+        box-shadow: 0 0 10px #444;
+    }
+
+    /* Neon Table */
+    .rental-table {
+        background: #1c1c1c;
+        border: 2px solid #333;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .rental-table th {
+        background: #0d0d0d;
+        color: #ffaa00;
+        text-align: center;
+        border: 1px solid #333;
+    }
+    .rental-table td {
+        background: #1c1c1c;
+        color: #f5f5f5;
+        border: 1px solid #333;
+        text-align: center;
+    }
+    .rental-table tr:hover td {
+        background: #111;
+        box-shadow: inset 0 0 10px #00ffcc;
+    }
+</style>
+
+<div class="dashboard-hero">
+    <h1>🎮 Super Admin Dashboard</h1>
+    <p>Manage users, games, rentals, and payments with a futuristic neon glow.</p>
+</div>
+
+<div class="text-center mb-4">
+    <a href="{% url 'admin:index' %}" class="btn-neon">🛠️ Go to Admin Panel</a>
+    <a href="{% url 'home' %}" class="btn-neon">🏠 Home Page</a>
+    <a href="{% url 'profile' %}" class="btn-neon">👤 Profile</a>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="summary-card">
+            <h5>Total Users</h5>
+            <p>{{ users.count }}</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="summary-card">
+            <h5>Total Games</h5>
+            <p>{{ games.count }}</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="summary-card">
+            <h5>Total Rentals</h5>
+            <p>{{ rentals.count }}</p>
+        </div>
+    </div>
+</div>
+
+<h4 class="mb-3" style="color:#00ffcc; text-shadow:0 0 10px #00ffcc;">Recent Rentals</h4>
+<table class="table rental-table">
+    <thead>
+        <tr>
+            <th>User</th>
+            <th>Game</th>
+            <th>Days</th>
+            <th>Total Cost</th>
+            <th>Status</th>
+            <th>Payment Status</th>
+            <th>Payment Method</th>
+            <th>Payment Date</th>
+            <th>Transaction ID</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for rental in rentals|slice:":5" %}
+        <tr>
+            <td>{{ rental.user.username }}</td>
+            <td>{{ rental.game.title }}</td>
+            <td>{{ rental.rental_days }}</td>
+            <td>₹{{ rental.cost }}</td>
+            <td>
+                {% if rental.status|lower == 'pending' %}
+                    <span class="badge-neon badge-pending">Pending</span>
+                {% elif rental.status|lower == 'approved' %}
+                    <span class="badge-neon badge-approved">Approved</span>
+                {% elif rental.status|lower == 'rejected' %}
+                    <span class="badge-neon badge-rejected">Rejected</span>
+                {% else %}
+                    <span class="badge-neon badge-default">{{ rental.status }}</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if rental.payment_status|lower == 'paid' %}
+                    <span class="badge-paid">Paid</span>
+                {% else %}
+                    <span class="badge-unpaid">Pending</span>
+                {% endif %}
+            </td>
+            <td>{{ rental.payment_method|default:"-" }}</td>
+            <td>{{ rental.payment_date|date:"Y-m-d H:i"|default:"-" }}</td>
+            <td>{{ rental.transaction_id|default:"-" }}</td>
+            <td>
+                {% if rental.status|lower == 'pending' %}
+                    <form action="{% url 'update_rental_status' rental.id 'Approved' %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-neon">Approve</button>
+                    </form>
+                    <form action="{% url 'update_rental_status' rental.id 'Rejected' %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-neon">Reject</button>
+                    </form>
+                {% else %}
+                    <span class="badge-neon badge-default">No Action</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="10" class="text-center">No recent rentals available.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

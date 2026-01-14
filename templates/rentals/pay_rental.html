@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% block title %}Pay Rental{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
+        color: #f5f5f5;
+    }
+
+    .payment-card {
+        background: #1c1c1c;
+        border: 2px solid #333;
+        border-radius: 12px;
+        padding: 30px;
+        max-width: 500px;
+        margin: 50px auto;
+        box-shadow: 0 0 20px #000;
+        text-align: center;
+        transition: 0.3s;
+    }
+
+    .payment-card:hover {
+        border-color: #00ffcc;
+        box-shadow: 0 0 20px #00ffcc;
+    }
+
+    h2 {
+        color: #00ffcc;
+        text-shadow: 0 0 10px #00ffcc, 0 0 20px #009988;
+        margin-bottom: 25px;
+    }
+
+    .payment-card label {
+        color: #ffaa00;
+        font-weight: bold;
+        display: block;
+        margin: 15px 0 5px;
+    }
+
+    select {
+        width: 100%;
+        padding: 10px;
+        border-radius: 8px;
+        border: 2px solid #333;
+        background: #0d0d0d;
+        color: #f5f5f5;
+        transition: 0.3s;
+    }
+
+    select:focus {
+        border-color: #00ffcc;
+        box-shadow: 0 0 10px #00ffcc;
+        outline: none;
+    }
+
+    .btn-neon, .btn-cancel {
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: bold;
+        border: 2px solid;
+        text-decoration: none;
+        margin: 10px 5px;
+        transition: 0.3s;
+    }
+
+    .btn-neon {
+        border-color: #00ffcc;
+        color: #00ffcc;
+        background: transparent;
+    }
+
+    .btn-neon:hover {
+        background: #00ffcc;
+        color: #000;
+        box-shadow: 0 0 15px #00ffcc, 0 0 40px #00ffcc;
+    }
+
+    .btn-cancel {
+        border-color: #ff4d4d;
+        color: #ff4d4d;
+        background: transparent;
+    }
+
+    .btn-cancel:hover {
+        background: #ff4d4d;
+        color: #000;
+        box-shadow: 0 0 15px #ff4d4d, 0 0 40px #ff4d4d;
+    }
+
+    .rental-info {
+        text-align: left;
+        margin-bottom: 20px;
+    }
+
+    .rental-info p {
+        margin: 8px 0;
+    }
+
+    .total-cost {
+        font-weight: bold;
+        color: #00ffcc;
+        font-size: 1.2rem;
+    }
+</style>
+
+<div class="payment-card">
+    <h2>Pay for {{ rental.game.title }}</h2>
+    <div class="rental-info">
+        <p>Rental Days: {{ rental.rental_days }}</p>
+        <p class="total-cost">Total Cost: ₹{{ rental.cost }}</p>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <label for="payment_method">Payment Method</label>
+        <select name="payment_method" id="payment_method">
+            <option value="Credit Card">Credit Card</option>
+            <option value="UPI">UPI</option>
+            <option value="Wallet">Wallet</option>
+            <option value="Net Banking">Net Banking</option>
+        </select>
+        <div>
+            <button type="submit" class="btn-neon">💳 Pay Now</button>
+            <a href="{% url 'my_rentals' %}" class="btn-cancel">✖ Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
